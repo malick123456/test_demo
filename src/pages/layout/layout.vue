@@ -9,6 +9,7 @@
           <header-page />
         </el-header>
         <el-main>
+          <login-page />
           <router-view />
         </el-main>
         <!-- <el-footer>Footer</el-footer> -->
@@ -21,6 +22,7 @@
 <script setup>
 import headerPage from "src/components/header.vue"
 import side from "src/components/side.vue"
+import loginPage from "src/components/login/login.vue"
 </script>
 
 <style lang="scss" scoped>

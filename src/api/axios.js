@@ -3,7 +3,7 @@ import axios from 'axios'
 
 // 创建 axios 实例
 const service = axios.create({
-  baseURL: '/api', // 根据需要设置
+  baseURL: 'http://localhost:3000/api', // 根据需要设置
   timeout: 10000,
 })
 
@@ -13,7 +13,7 @@ service.interceptors.request.use(
     // 示例：添加 token
     const token = localStorage.getItem('token')
     if (token) {
-      config.headers.Cookie = `${token}`
+      config.headers.Authorization = `Bearer ${token}`
     }
     return config
   },

@@ -1,6 +1,6 @@
 import { ref } from "vue"
 import { defineStore } from 'pinia'
-export const useHeaderStore = defineStore('auth', () => {
+export const useHeaderStore = defineStore('header', () => {
   const isCollapse = ref(false)
   const subjects = ref('chinese')
   const get_is_collapse = () => {
