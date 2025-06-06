@@ -24,8 +24,8 @@ const route = useRoute()
 const { set_subjects, get_subjects, subjects } = useHeaderStore()
 const subjects_type = ref(get_subjects().value)
 
+// 展示学科
 watch(() => get_subjects().value, (bl) => {
-  console.error('watch', bl)
   subjects_type.value = get_subjects().value
 })
 // const subjects_obj = { chinese, en, math }

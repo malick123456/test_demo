@@ -56,23 +56,22 @@ const { get_is_login, set_show_login_dialog, set_is_login } = useLoginStore()
 const isCollapse = ref(get_is_collapse().value)
 const tabPosition = ref(get_subjects().value)
 const islogin = ref(false)
+// 选择的tabs
 watch(tabPosition, (type) => {
-    console.error(get_is_login().value, 'type====', type)
     set_subjects(type)
 })
+// 是否已登录
 watch(() => get_is_login().value, (bl) => {
-    console.error('get_is_login', bl)
     islogin.value = bl
 }, {deep: true, immediate: true})
+// 左侧是否展开
 const handle_is_collapse = (bool) => {
-    console.error('=====', get_is_collapse().value)
     isCollapse.value = !get_is_collapse().value
     set_is_collapse(!get_is_collapse().value)
 }
 // 退出登录
 const handle_logout = () => {
     if (!islogin.value) {
-        console.error('handle_logout', islogin.value)
         set_show_login_dialog(true)
     } else {
         localStorage.removeItem('token');

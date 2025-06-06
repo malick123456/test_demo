@@ -6,7 +6,6 @@ export const useHeaderStore = defineStore('auth', () => {
     return isCollapse
   }
   const set_is_collapse = (bool) => {
-    console.error('soter', bool)
     isCollapse.value = bool
   }
   return {

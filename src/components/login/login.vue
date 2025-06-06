@@ -29,7 +29,11 @@ import loginTemplate from "src/components/login/components/login_component.vue"
 import register from "src/components/login/components/register.vue"
 
 const ruleFormRef = ref(null)
-const ruleForm = ref({})
+const ruleForm = ref({
+  username: '',
+  password: '',
+  confirm_password: '',
+})
 const active_tabs = ref('login')
 const centerDialogVisible = ref(false)
 const rules = reactive({
@@ -43,12 +47,11 @@ const rules = reactive({
     { required: true, message: '确认密码不能为空！', trigger: 'blur' },
   ],
 })
+// 是否展示弹窗
 watch(() => get_show_login_dialog().value, (bl) => {
-  console.error('get_show_login_dialog', get_show_login_dialog().value)
   centerDialogVisible.value = bl
 },{deep: true, immediate:true})
 const close_btn = () => {
-  console.error('close_btn')
   set_show_login_dialog(false)
 }
 // 提交

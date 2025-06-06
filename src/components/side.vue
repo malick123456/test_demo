@@ -48,14 +48,13 @@ const first_active_tab = ref('0')
 const isCollapse = ref(get_is_collapse().value)
 const width = ref('200px')
 
-
+// 是否为展开
 watch(() => get_is_collapse().value, (bl) => {
   isCollapse.value = get_is_collapse().value
   width.value = get_is_collapse().value ? '60px' : '200px'
 })
 onMounted(() => {
   tabs.value = router.getRoutes().filter(item => item.path != '/' && item.meta.side)
-  console.error(tabs.value, 'route', get_is_collapse().value)
 })
 const handle_tabs = (item) => {
   router.push(item.value)
@@ -63,10 +62,8 @@ const handle_tabs = (item) => {
 const handle_child_item = (item, child_item, index, child_index) => {
   first_active_tab.value = String(index)
   router.push(child_item.name)
-  console.error(index, child_index, 'index, child_index', first_active_tab.value)
 }
 const handleOpen = (key, keyPath) => {
-  console.error(key, keyPath)
   // first_active_tab.value = keyPath[0]
 }
 const handleClose = (key, keyPath) => {
