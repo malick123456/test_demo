@@ -26,6 +26,15 @@
         placeholder="请输入您的密码"
         />
     </el-form-item>
+    <el-form-item label="手机号" prop="phone">
+      <el-input 
+        v-model="ruleForm.phone"
+        style="width: 200px;"
+        type="phone"
+        show-password
+        placeholder="请输入您的密码"
+        />
+    </el-form-item>
   </div>
 </template>
 

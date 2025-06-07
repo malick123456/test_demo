@@ -34,7 +34,7 @@
                         <template #dropdown>
                             <el-dropdown-menu>
                                 <el-dropdown-item @click="handle_logout">
-                                 {{ islogin }} {{ islogin ? '退出登录' : '登录' }}
+                                 {{ islogin ? '退出登录' : '登录' }}
                                 </el-dropdown-item>
                             </el-dropdown-menu>
                         </template>

@@ -12,8 +12,14 @@ service.interceptors.request.use(
   (config) => {
     // 示例：添加 token
     const token = localStorage.getItem('token')
+    // config.headers["content-type"] = "application/json"
+    console.error('请求拦截器', config)
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
+    }
+    // 设置默认 content-type 只对有 body 的请求生效
+    if (!config.headers['Content-Type']) {
+      config.headers['Content-Type'] = 'application/json'
     }
     return config
   },
@@ -29,14 +35,10 @@ service.interceptors.response.use(
     console.error(res, '响应拦截器')
     const {status, data} = response
     if (res.status !== 200) {
-      console.warn('请求异常:', res.message)
+      console.warn('请求异常:', res)
       return Promise.reject(res)
     }
-    return {
-      code: status,
-      data: data.data,
-      msg: data.status
-    }
+    return data
   },
   (err) => {
     const {response} = err
@@ -48,5 +50,12 @@ service.interceptors.response.use(
     }
   }
 )
-
+// post通过params传参
+axios.postOfParams = (url, params) => {
+  return axios({
+    url:url,
+    method: 'post',
+    params: params
+  })
+}
 export default service

@@ -27,11 +27,14 @@ import { useLoginStore } from "src/store/index.js"
 const { set_is_login, set_show_login_dialog, get_show_login_dialog } = useLoginStore()
 import loginTemplate from "src/components/login/components/login_component.vue"
 import register from "src/components/login/components/register.vue"
+import {api_user} from "src/api/index.js"
+import {lodash} from "src/uilt/index.js"
 
 const ruleFormRef = ref(null)
 const ruleForm = ref({
   username: '',
   password: '',
+  phone: '',
   confirm_password: '',
 })
 const active_tabs = ref('login')
@@ -42,9 +45,27 @@ const rules = reactive({
   ],
   password: [
     { required: true, message: '密码不能为空！', trigger: 'blur' },
+    {
+      pattern: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,20}$/,
+      message: '密码需包含字母和数字，长度6-20位',
+      trigger: 'blur'
+    }
   ],
   confirm_password: [
     { required: true, message: '确认密码不能为空！', trigger: 'blur' },
+    {
+      pattern: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,20}$/,
+      message: '密码需包含字母和数字，长度6-20位',
+      trigger: 'blur'
+    }
+  ],
+  phone: [
+    { required: true, message: '手机号不能为空！', trigger: 'blur' },
+    {
+      pattern: /^1[3-9]\d{9}$/,
+      message: '请输入有效的11位手机号',
+      trigger: 'blur'
+    }
   ],
 })
 // 是否展示弹窗
@@ -62,8 +83,14 @@ const submitForm = (formEl) => {
     console.log(valid, 'error submit!', fields)
     if (valid) {
       console.log('submit!')
-      set_is_login(true)
-      set_show_login_dialog(false)
+      api_user.post_register(ruleForm.value).then(res => {
+        console.error('res', res)
+        const {code, msg, data} = res
+      }).catch(err => {
+        console.error(err)
+      })
+      // set_is_login(true)
+      // set_show_login_dialog(false)
     } else {
       console.log('error submit!', fields)
     }

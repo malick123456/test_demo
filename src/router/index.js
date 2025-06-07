@@ -4,15 +4,26 @@ const routes = [
     {
         path: '/login',
         name: 'login',
-        component: () => import("src/components/login.vue")
+        component: () => import("src/components/login/login.vue")
     },
     {
         path: '/',
         name: 'main',
         meta: {},
+        redirect: '/home_page',
         component: () => import("src/pages/layout/layout.vue"),
         children: [
             // home页面
+            {
+                path: 'home_page',
+                name: 'home_page',
+                meta: {
+                    icon: 'HomeFilled',
+                    title: '首页',
+                    side: true,
+                },
+                component: () => import("src/pages/home/index.vue"),
+            },
             {
                 path: 'first_grade',
                 name: 'first_grade',
@@ -80,9 +91,22 @@ const routes = [
         ]
     },
 ]
+
 const router = createRouter({
     routes,
     history: createWebHistory()
 })
-
+// router.beforeEach((to, from, next) => {
+//     console.error('befor', to, from, next)
+//     const isAuthenticated = !!localStorage.getItem('token')
+//     if (to.path === '/') {
+//         next('/home_page')
+//     } else if (to.path === '/login' && isAuthenticated) {
+//       next('/home')
+//     } else if (to.meta.requiresAuth && !isAuthenticated) {
+//       next('/login')
+//     } else {
+//       next()
+//     }
+//   })
 export default router
