@@ -87,6 +87,46 @@ const routes = [
                         component: () => import("src/pages/home/components/workplace.vue")
                     },
                 ],
+            },
+            {
+                path: 'ocrimage',
+                name: 'ocrimage',
+                meta: {
+                    icon: "UploadFilled",
+                    title: '识别图片文字',
+                    side: true,
+                },
+                component: () => import("src/components/ocrImage.vue"),  
+            },
+            {
+                path: 'open_AIChat',
+                name: 'open_AIChat',
+                meta: {
+                    icon: "UploadFilled",
+                    title: 'AI自动问答',
+                    side: true,
+                },
+                component: () => import("src/components/openAIChat.vue"),  
+            },
+            {
+                path: 'user_info',
+                name: 'user_info',
+                meta: {
+                    icon: "UploadFilled",
+                    title: '所有用户注册信息',
+                    side: true,
+                },
+                component: () => import("src/components/all_user_info.vue"),  
+            },
+            {
+                path: 'add_question',
+                name: 'add_question',
+                meta: {
+                    icon: "UploadFilled",
+                    title: '添加试题',
+                    side: true,
+                },
+                component: () => import("src/components/questionList.vue"),  
             }
         ]
     },

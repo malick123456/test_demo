@@ -36,3 +36,12 @@ import layOut from 'src/pages/layout/layout.vue'
   filter: drop-shadow(0 0 2em #42b883aa);
 }
 </style>
+<style lang="css">
+.el-pagination {
+  width: 100%;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>

@@ -12,8 +12,6 @@ service.interceptors.request.use(
   (config) => {
     // 示例：添加 token
     const token = localStorage.getItem('token')
-    // config.headers["content-type"] = "application/json"
-    console.error('请求拦截器', config)
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -32,20 +30,19 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response) => {
     const res = response
-    console.error(res, '响应拦截器')
-    const {status, data} = response
     if (res.status !== 200) {
       console.warn('请求异常:', res)
       return Promise.reject(res)
     }
-    return data
+    res.data.code = res.status
+    return res
   },
   (err) => {
     const {response} = err
     const {data} = response
     console.error(data,'网络错误:', err)
     return {
-      code: data.statusCode,
+      code: data.status,
       msg: data.errMessage,
     }
   }

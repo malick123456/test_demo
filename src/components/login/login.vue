@@ -27,8 +27,9 @@ import { useLoginStore } from "src/store/index.js"
 const { set_is_login, set_show_login_dialog, get_show_login_dialog } = useLoginStore()
 import loginTemplate from "src/components/login/components/login_component.vue"
 import register from "src/components/login/components/register.vue"
-import {api_user} from "src/api/index.js"
-import {lodash} from "src/uilt/index.js"
+import { api_user } from "src/api/index.js"
+import { ElMessage } from 'element-plus'
+import { lodash } from "src/uilt/index.js"
 
 const ruleFormRef = ref(null)
 const ruleForm = ref({
@@ -71,7 +72,7 @@ const rules = reactive({
 // 是否展示弹窗
 watch(() => get_show_login_dialog().value, (bl) => {
   centerDialogVisible.value = bl
-},{deep: true, immediate:true})
+}, { deep: true, immediate: true })
 const close_btn = () => {
   set_show_login_dialog(false)
 }
@@ -82,10 +83,20 @@ const submitForm = (formEl) => {
   formEl.validate((valid, fields) => {
     console.log(valid, 'error submit!', fields)
     if (valid) {
-      console.log('submit!')
       api_user.post_register(ruleForm.value).then(res => {
         console.error('res', res)
-        const {code, msg, data} = res
+        const { code, message, data } = res.data
+        if (code == 200) {
+          active_tabs.value = 'login'
+          ruleForm.value = {
+            username: '',
+            password: '',
+            phone: '',
+            confirm_password: '',
+          }
+        } else {
+          ElMessage.error(message)
+        }
       }).catch(err => {
         console.error(err)
       })
