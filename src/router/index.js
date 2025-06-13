@@ -1,5 +1,41 @@
 import { createRouter, createWebHistory } from "vue-router"
-
+// 动态路由
+const generateGradeRoutes = (gradeNum, icon = 'Avatar') => {
+    const gradeName = ['一', '二', '三', '四', '五', '六'][gradeNum - 1] + '年级'
+    return {
+        path: `${gradeNum}_grade`,
+        name: `${gradeNum}_grade`,
+        meta: {
+            icon,
+            title: gradeName,
+            grade_id: gradeNum,
+            side: true,
+        },
+        component: () => import("src/pages/grade/index.vue"),
+        children: [
+            {
+                path: `/${gradeNum}_grade_last_issue`,
+                name: `${gradeNum}_grade_last_issue`,
+                meta: {
+                    title: '上学期',
+                    semester: 1,
+                    superior: gradeName,
+                },
+                component: () => import("src/pages/grade/index.vue")
+            },
+            {
+                path: `/${gradeNum}_grade_next_issue`,
+                name: `${gradeNum}_grade_next_issue`,
+                meta: {
+                    title: '下学期',
+                    semester: 2,
+                    superior: gradeName,
+                },
+                component: () => import("src/pages/grade/index.vue")
+            }
+        ]
+    }
+}
 const routes = [
     {
         path: '/login',
@@ -24,70 +60,8 @@ const routes = [
                 },
                 component: () => import("src/pages/home/index.vue"),
             },
-            {
-                path: 'first_grade',
-                name: 'first_grade',
-                meta: {
-                    icon: 'HomeFilled',
-                    title: '一年级',
-                    side: true,
-                },
-                component: () => import("src/pages/home/index.vue"),
-                children: [
-                    // 一年级上期
-                    {
-                        path: '/first_grade_last_issue',
-                        name: 'first_grade_last_issue',
-                        meta: {
-                            title: '一年级上期',
-                            superior: '一年级',
-                        },
-                        component: () => import("src/pages/home/components/math_page.vue")
-                    },
-                    // 一年级下期
-                    {
-                        path: '/first_grade_next_issue',
-                        name: 'first_grade_next_issue',
-                        meta: {
-                            title: '一年级下期',
-                            superior: '一年级',
-                        },
-                        component: () => import("src/pages/home/components/workplace.vue")
-                    },
-                ],
-            },
-            {
-                path: 'second_grade',
-                name: 'second_grade',
-                meta: {
-                    icon: "Document",
-                    title: '二年级',
-                    side: true,
-                },
-                component: () => import("src/pages/test/index.vue"),
-                children: [
-                    // 一年级上期
-                    {
-                        path: '/second_grade_last_issue',
-                        name: 'second_grade_last_issue',
-                        meta: {
-                            title: '二年级上期',
-                            superior: '二年级',
-                        },
-                        component: () => import("src/pages/home/components/math_page.vue")
-                    },
-                    // 一年级下期
-                    {
-                        path: '/second_grade_next_issue',
-                        name: 'second_grade_next_issue',
-                        meta: {
-                            title: '二年级下期',
-                            superior: '二年级',
-                        },
-                        component: () => import("src/pages/home/components/workplace.vue")
-                    },
-                ],
-            },
+            // 动态添加 1~6 年级
+            ...[1, 2, 3, 4, 5, 6].map(num => generateGradeRoutes(num)),
             {
                 path: 'ocrimage',
                 name: 'ocrimage',
@@ -96,7 +70,7 @@ const routes = [
                     title: '识别图片文字',
                     side: true,
                 },
-                component: () => import("src/components/ocrImage.vue"),  
+                component: () => import("src/components/ocrImage.vue"),
             },
             {
                 path: 'open_AIChat',
@@ -106,7 +80,7 @@ const routes = [
                     title: 'AI自动问答',
                     side: true,
                 },
-                component: () => import("src/components/openAIChat.vue"),  
+                component: () => import("src/components/openAIChat.vue"),
             },
             {
                 path: 'user_info',
@@ -116,7 +90,7 @@ const routes = [
                     title: '所有用户注册信息',
                     side: true,
                 },
-                component: () => import("src/components/all_user_info.vue"),  
+                component: () => import("src/components/all_user_info.vue"),
             },
             {
                 path: 'add_question',
@@ -126,7 +100,7 @@ const routes = [
                     title: '添加试题',
                     side: true,
                 },
-                component: () => import("src/components/questionList.vue"),  
+                component: () => import("src/components/questionList.vue"),
             }
         ]
     },

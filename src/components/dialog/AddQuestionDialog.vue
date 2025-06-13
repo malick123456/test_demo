@@ -1,17 +1,25 @@
 <template>
-  <el-dialog v-model="visible" title="添加试题" width="600px" @close="resetForm">
+  <el-dialog v-model="visible" title="添加试题" width="600px" :show-close="false">
     <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
       <el-form-item label="年级" prop="grade_id">
         <el-select v-model="form.grade_id" placeholder="请选择年级">
           <el-option v-for="n in 6" :key="n" :label="`${n}年级`" :value="n" />
         </el-select>
       </el-form-item>
-
+      <el-form-item label="学期" prop="semester">
+        <el-select v-model="form.semester" placeholder="请选择">
+          <el-option :value="1">{{ '上学期' }}</el-option>
+          <el-option :value="2">{{ '下学期' }}</el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item label="题型" prop="type">
         <el-select v-model="form.type" placeholder="选择题型">
-          <el-option label="选择题" :value="1" />
-          <el-option label="填空题" :value="2" />
-          <el-option label="应用题" :value="3" />
+          <el-option 
+            :label="item.label" 
+            :value="item.value"  
+            v-for="(item, index) in typeList"
+            :key="index"
+          />
         </el-select>
       </el-form-item>
 
@@ -23,7 +31,7 @@
       </el-form-item>
 
       <!-- 选择题：显示选项输入 -->
-      <template v-if="form.type === 1">
+      <template v-if="form.type == 1 && get_subjects() == 'math'">
         <el-form-item label="选项 A" prop="options.A">
           <el-input v-model="form.options.A" />
         </el-form-item>
@@ -48,7 +56,7 @@
     </el-form>
 
     <template #footer>
-      <el-button @click="visible = false">取消</el-button>
+      <el-button @click="resetForm">取消</el-button>
       <el-button type="primary" @click="handleSubmit">提交</el-button>
     </template>
   </el-dialog>
@@ -60,10 +68,6 @@ import { ElMessage } from 'element-plus'
 import { api_question } from '../../api';
 import { useHeaderStore } from "src/store/index.js"
 
-const emit = defineEmits(['update:modelValue', 'success']);
-const { get_subjects } = useHeaderStore()
-const visible = defineModel();
-const formRef = ref(null);
 const props = defineProps({
   modelValue: {
     type: Boolean,
@@ -73,39 +77,51 @@ const props = defineProps({
     type: Object, 
     default: () => {}
   },
+  type: {
+    type: Object,
+    default: () => {}
+  },
 });
+const emit = defineEmits(['handleCloseDialog', 'success']);
+const { get_subjects } = useHeaderStore()
+const visible = defineModel();
+const formRef = ref(null);
 const subjects_obj = {
   chinese: 1,
   math: 2,
   en: 3,
 }
+// 题型
+const typeList = ref([])
 watch(() => props.editData, val => {
-  if (val) Object.assign(form, val);
+  if (val) {
+    Object.assign(form.value, val);
+  } else {
+    resetForm()
+  }
 });
-console.error('visible', visible)
-// 双向绑定 dialog 可见性
-// watch(() => props.modelValue, (val) => {
-//   console.error('++++++')
-//   visible.value = val
-// });
-// watch(visible, val => emit('update:modelValue', val));
-
+// 展示学科
+watch(() => get_subjects().value, (val) => {
+  typeList.value = props.type[val]
+}, {deep: true, immediate: true})
 const form = ref({
-  grade_id: null,
-  type: null,
+  grade_id: '',
+  type: '',
   content: '',
   options: { A: '', B: '', C: '', D: '' },
   answer: '',
   unit_id: '',
+  semester: '',
   subject_id: subjects_obj[get_subjects().value],
   explanation: ''
 });
 
 const rules = {
-  grade_id: [{ required: true, message: '请选择年级', trigger: 'change' }],
-  type: [{ required: true, message: '请选择题型', trigger: 'change' }],
+  grade_id: [{ required: true, message: '请选择年级', trigger: 'blur' }],
+  type: [{ required: true, message: '请选择题型', trigger: 'blur' }],
   content: [{ required: true, message: '请输入题干', trigger: 'blur' }],
   answer: [{ required: true, message: '请输入答案', trigger: 'blur' }],
+  semester: [{ required: true, message: '请选择学期', trigger: 'blur' }],
   options: {
     A: [{ required: true, message: '选项 A 不能为空', trigger: 'blur' }],
     B: [{ required: true, message: '选项 B 不能为空', trigger: 'blur' }],
@@ -115,50 +131,49 @@ const rules = {
 };
 
 const resetForm = () => {
-  form.grade_id = null;
-  form.type = null;
-  form.content = '';
-  form.answer = '';
-  form.explanation = '';
-  form.options = { A: '', B: '', C: '', D: '' };
+  form.value.grade_id = '';
+  form.value.type = '';
+  form.value.content = '';
+  form.value.answer = '';
+  form.value.explanation = '';
+  form.value.semester = '';
+  form.value.options = { A: '', B: '', C: '', D: '' };
   formRef.value?.clearValidate();
+  emit('handleCloseDialog')
 };
 
 const handleSubmit = () => {
   formRef.value.validate(async valid => {
     if (!valid) return;
-    if (form.id) {
-      // await axios.put(`/api/questions/${form.id}`, payload);
-      
-      ElMessage.success('编辑成功');
-    } else {
-      // await axios.post('/api/questions', payload);
-      console.log(form.value, 'form.value');
-      
+    if (form.value.id) {
+      // await axios.put(`/api/questions/${form.value.id}`, payload);
+      form.value.unit_id = Number(form.value.unit_id)
       try {
-        let res = await api_question.add_question(form.value)
-        console.error('res', res)
+        let res = await api_question.update_question(form.value)
+        const {code, msg, data} = res.data
+        if (code == 200) {
+          resetForm()
+          emit('success')
+        } else {
+          ElMessage.error(msg);
+        }
       } catch (err) {
         console.error(err)
       }
-      ElMessage.success('添加成功');
+    } else {
+      try {
+        let res = await api_question.add_question(form.value)
+        const {code, msg, data} = res.data
+        if (code == 200) {
+          resetForm()
+          emit('success')
+        } else {
+          ElMessage.error(msg);
+        }
+      } catch (err) {
+        console.error(err)
+      }
     }
-
-    // try {
-    //   const payload = {
-    //     ...form,
-    //     options: form.type === 1 ? form.options : null
-    //   };
-
-    //   // await axios.post('/api/questions', payload);
-
-    //   ElMessage.success('添加成功');
-    //   emit('success');
-    //   visible.value = false;
-    // } catch (err) {
-    //   ElMessage.error('提交失败，请检查填写内容');
-    //   console.error(err);
-    // }
   });
 };
 </script>

@@ -71,7 +71,6 @@ const handleClose = (key, keyPath) => {
 }
 const handle_menu_select = (val) => {
   if (!(val.indexOf('-') > -1)) {
-    console.error('handle_menu_select', tabs.value[val])
     first_active_tab.value = val
     router.push(tabs.value[val].name)
   }
