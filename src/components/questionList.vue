@@ -23,6 +23,7 @@
         </el-select>
       </el-form-item>
       <el-button type="primary" @click="fetchData">查询</el-button>
+      <el-button type="primary" @click="add_questions_batch_fn">批量操作</el-button>
       <el-button @click="resetFilters">重置</el-button>
       <el-button type="success" @click="dialogVisible = true">添加题目</el-button>
     </el-form>
@@ -85,6 +86,7 @@ import { format_data } from "src/uilt/index.js"
 import { ElMessage } from 'element-plus'
 import { useHeaderStore } from "src/store/index.js"
 import AddQuestionDialog from 'src/components/dialog/AddQuestionDialog.vue';
+import {demo_params} from "src/demo.js"
 
 const chineseNumbers = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十']
 const { get_subjects } = useHeaderStore()
@@ -163,7 +165,7 @@ const subjects_type = ref(get_subjects().value)
 //   fetchData();
 // });
 const computed_type = (id) => {
-  return typeMap[subjects_type.value][id]
+  return typeMap[get_subjects().value][id]
 }
 const editQuestion = (row) => {
   editingQuestion.value = { ...row }; // 深拷贝避免污染
@@ -186,6 +188,10 @@ const fetchData = async () => {
     let res = await api_question.post_all_questions(params)
     const { code, msg, data, page, size, total } = res.data
     if (code == 200) {
+      data.forEach(item => {
+        item.options = JSON.parse(item.options)
+      })
+      console.error(data, 'data')
       questionList.value = data
       pageTotal.value = total;
     } else {
@@ -204,6 +210,15 @@ const fetchData = async () => {
   // questionList.value = data.data;
   // total.value = data.total;
 };
+// 批量增加
+const add_questions_batch_fn = async() => {
+  try {
+    let res = await api_question.add_questions_batch({questions:demo_params})
+  } catch (err) {
+    console.error(err)
+  }
+  
+}
 const deleteQuestion = async (id) => {
   try {
     let res = await api_question.delete_question({ id })

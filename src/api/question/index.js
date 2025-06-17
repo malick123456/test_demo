@@ -6,6 +6,12 @@ export const add_question = (
   url ='/questions/addQuestion', 
 ) => axios.post(url, params)
 
+// 添加试题
+export const add_questions_batch = (
+  params,
+  url ='/questions/addQuestionsBatch', 
+) => axios.post(url, params)
+
 // 获取试题详情
 export const get_question_by_id_details = (
   params,

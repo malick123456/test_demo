@@ -29,9 +29,8 @@
       <el-form-item label="题干" prop="content">
         <el-input type="textarea" v-model="form.content" placeholder="请输入题干" />
       </el-form-item>
-
       <!-- 选择题：显示选项输入 -->
-      <template v-if="form.type == 1 && get_subjects() == 'math'">
+      <template v-if="computed_option">
         <el-form-item label="选项 A" prop="options.A">
           <el-input v-model="form.options.A" />
         </el-form-item>
@@ -63,7 +62,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch } from 'vue';
+import { ref, reactive, watch, computed } from 'vue';
 import { ElMessage } from 'element-plus'
 import { api_question } from '../../api';
 import { useHeaderStore } from "src/store/index.js"
@@ -93,6 +92,7 @@ const subjects_obj = {
 }
 // 题型
 const typeList = ref([])
+
 watch(() => props.editData, val => {
   if (val) {
     Object.assign(form.value, val);
@@ -126,10 +126,12 @@ const rules = {
     A: [{ required: true, message: '选项 A 不能为空', trigger: 'blur' }],
     B: [{ required: true, message: '选项 B 不能为空', trigger: 'blur' }],
     C: [{ required: true, message: '选项 C 不能为空', trigger: 'blur' }],
-    D: [{ required: true, message: '选项 D 不能为空', trigger: 'blur' }]
+    D: [{ required: false, message: '选项 D 不能为空', trigger: 'blur' }]
   }
 };
-
+const computed_option = computed(() => {
+  return form.value.type == 2 && get_subjects().value == 'math'
+})
 const resetForm = () => {
   form.value.grade_id = '';
   form.value.type = '';
@@ -148,6 +150,7 @@ const handleSubmit = () => {
     if (form.value.id) {
       // await axios.put(`/api/questions/${form.value.id}`, payload);
       form.value.unit_id = Number(form.value.unit_id)
+      form.value.options = JSON.stringify(form.value.options)
       try {
         let res = await api_question.update_question(form.value)
         const {code, msg, data} = res.data
